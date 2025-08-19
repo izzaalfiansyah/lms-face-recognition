@@ -1,22 +1,34 @@
+import os
 import face_recognition
+from fastapi import HTTPException
+import numpy
+from pydantic import BaseModel
+
+from src.service.face_service.get_user_face_dir import user_face_dir
 
 
-def verify_face(image) -> int:
-    image_local = "src/assets/gibran.jpg"
+class VerifyFaceResult(BaseModel):
+    verified: bool
+    distance: float
 
-    print("search image", image)
-    print("local image", image_local)
 
-    image1 = face_recognition.load_image_file(image_local)
-    image1_encoding = face_recognition.face_encodings(image1)[0]
+def verify_face(user_id: int, image) -> VerifyFaceResult:
+    user_folder = user_face_dir(user_id)
+    encoded_images = []
 
-    image2 = face_recognition.load_image_file(image)
-    image2_encoding = face_recognition.face_encodings(image2)[0]
+    if not os.path.exists(user_folder):
+        raise HTTPException(404, detail="Face recognition not found")
 
-    results = face_recognition.compare_faces([image1_encoding], image2_encoding)
-    distances = face_recognition.face_distance([image1_encoding], image2_encoding)
+    for file in os.scandir(user_folder):
+        encoded_vector = numpy.load(file.path)
+        encoded_images.append(encoded_vector)
 
-    print(distances[0])
-    print(results[0])
+    unknown = face_recognition.load_image_file(image)
+    unknown_encoding = face_recognition.face_encodings(unknown)[0]
 
-    return 1
+    distances = face_recognition.face_distance(encoded_images, unknown_encoding)
+
+    distance = numpy.mean(numpy.array(distances)).item()
+    verified = distance < 0.5
+
+    return VerifyFaceResult(verified=verified, distance=distance)
