@@ -22,6 +22,7 @@ async def ws_verify_action(ws: WebSocket, user_id, data):
                 await ws.send_json(
                     {
                         "success": True,
+                        "status": "success",
                         "message": "user face recognized",
                         "data": result.model_dump(),
                     }
@@ -29,6 +30,7 @@ async def ws_verify_action(ws: WebSocket, user_id, data):
             else:
                 await ws.send_json(
                     {
+                        "status": "not_recognized",
                         "message": "user face not recognized",
                         "data": result.model_dump(),
                     }
@@ -38,4 +40,4 @@ async def ws_verify_action(ws: WebSocket, user_id, data):
         else:
             raise Exception("image not valid")
     except:
-        await ws.send_json({"message": "image not valid"})
+        await ws.send_json({"status": "error", "message": "image not valid"})
