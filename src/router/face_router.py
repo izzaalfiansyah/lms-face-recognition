@@ -24,4 +24,11 @@ async def verify(user_id: int = Form(), image: UploadFile | None = None):
 
     result = await verify_face(user_id, image.file)
 
-    return result
+    if not result.verified:
+        raise HTTPException(401, "user face not recognized")
+
+    return {
+        "success": result.verified,
+        "message": "user face recognized",
+        "data": result.model_dump(),
+    }
