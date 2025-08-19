@@ -22,4 +22,6 @@ async def verify(user_id: int = Form(), image: UploadFile | None = None):
     if image is None:
         raise HTTPException(status_code=422, detail="Image not found")
 
-    return verify_face(user_id, image.file)
+    result = await verify_face(user_id, image.file)
+
+    return result

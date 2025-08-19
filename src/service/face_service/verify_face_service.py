@@ -12,7 +12,7 @@ class VerifyFaceResult(BaseModel):
     distance: float
 
 
-def verify_face(user_id: int, image) -> VerifyFaceResult:
+async def verify_face(user_id: int, image) -> VerifyFaceResult:
     user_folder = user_face_dir(user_id)
     encoded_images = []
 
