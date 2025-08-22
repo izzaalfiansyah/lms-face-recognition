@@ -10,10 +10,10 @@ async def store(user_id: int = Form(), images: list[UploadFile] = []):
     if len(images) == 0:
         raise HTTPException(status_code=422, detail="Images not found")
 
-    (_, success, _) = store_face(StoreFaceParam(user_id=user_id), images)
+    result = store_face(StoreFaceParam(user_id=user_id), images)
 
     return {
-        "message": f"{success} images successfully saved",
+        "message": f"{result.success} images successfully saved",
     }
 
 

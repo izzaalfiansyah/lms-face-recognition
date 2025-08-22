@@ -11,7 +11,13 @@ class StoreFaceParam(BaseModel):
     user_id: int
 
 
-def store_face(param: StoreFaceParam, images: list[UploadFile]) -> tuple[int, int, int]:
+class StoreFaceResult(BaseModel):
+    total: int
+    success: int
+    failed: int
+
+
+def store_face(param: StoreFaceParam, images: list[UploadFile]) -> StoreFaceResult:
     is_path_exists = os.path.exists(user_face_dir(param.user_id))
     user_folder = user_face_dir(param.user_id)
 
@@ -45,4 +51,4 @@ def store_face(param: StoreFaceParam, images: list[UploadFile]) -> tuple[int, in
 
     success = index
     failed = total - success
-    return (total, success, failed)
+    return StoreFaceResult(total=total, success=success, failed=failed)
