@@ -39,7 +39,8 @@ def store_face(param: StoreFaceParam, images: list[UploadFile]) -> tuple[int, in
             np.save(user_face_dir(param.user_id) + "/" + str(index), encoded_image)
 
             index += 1
-        except:
+        except Exception as err:
+            print(err)
             pass
 
     success = index
