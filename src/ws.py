@@ -19,5 +19,5 @@ async def runWs(ws: WebSocket):
 
             if type == "verify":
                 await ws_verify_action(ws, user_id, data)
-        except:
+        except Exception as _:
             await ws.send_json({"message": "data not completed"})
