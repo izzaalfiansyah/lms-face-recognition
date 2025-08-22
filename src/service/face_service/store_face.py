@@ -26,10 +26,18 @@ def store_face(param: StoreFaceParam, images: list[UploadFile]) -> tuple[int, in
 
     for image in images:
         try:
+            image.file.seek(0)
+
             image_file = face_recognition.load_image_file(image.file)
-            encoded_image = face_recognition.face_encodings(image_file)[0]
+            encoded_images = face_recognition.face_encodings(image_file)
+
+            if len(encoded_images) == 0:
+                continue
+
+            encoded_image = encoded_images[0]
 
             np.save(user_face_dir(param.user_id) + "/" + str(index), encoded_image)
+
             index += 1
         except:
             pass
