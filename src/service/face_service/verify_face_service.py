@@ -28,7 +28,7 @@ async def verify_face(user_id: int, image) -> VerifyFaceResult:
 
     distances = face_recognition.face_distance(encoded_images, unknown_encoding)
 
-    distance = numpy.mean(numpy.array(distances)).item()
+    distance = numpy.array(distances).mean()
     verified = distance < 0.5
 
     return VerifyFaceResult(verified=verified, distance=distance)
