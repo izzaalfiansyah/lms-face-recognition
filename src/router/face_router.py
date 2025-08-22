@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Form, HTTPException, UploadFile
-from src.service.face_service.store_face import StoreFaceParam, store_face
+from src.service.face_service.store_face_service import StoreFaceParam, store_face
 from src.service.face_service.verify_face_service import verify_face
 
 router = APIRouter()

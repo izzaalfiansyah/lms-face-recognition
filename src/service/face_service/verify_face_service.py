@@ -4,7 +4,7 @@ from fastapi import HTTPException
 import numpy
 from pydantic import BaseModel
 
-from src.service.face_service.get_user_face_dir import user_face_dir
+from src.service.face_service.get_user_face_dir_service import user_face_dir
 
 
 class VerifyFaceResult(BaseModel):

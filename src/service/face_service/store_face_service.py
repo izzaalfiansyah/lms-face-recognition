@@ -4,7 +4,7 @@ from pydantic import BaseModel
 import face_recognition
 import numpy as np
 
-from src.service.face_service.get_user_face_dir import user_face_dir
+from src.service.face_service.get_user_face_dir_service import user_face_dir
 
 
 class StoreFaceParam(BaseModel):
