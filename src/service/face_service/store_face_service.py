@@ -1,10 +1,12 @@
 import os
+from typing import Any, Dict
 from fastapi import UploadFile
 from pydantic import BaseModel
-import face_recognition
+from deepface import DeepFace
 import numpy as np
 
 from src.service.face_service.get_user_face_dir_service import user_face_dir
+from src.utils.env import model_name
 
 
 class StoreFaceParam(BaseModel):
@@ -33,16 +35,23 @@ def store_face(param: StoreFaceParam, images: list[UploadFile]) -> StoreFaceResu
     for image in images:
         try:
             image.file.seek(0)
+            extension = str(image.filename).split(".")[-1]
+            filename = user_face_dir(param.user_id) + "/" + str(index) + "." + extension
 
-            image_file = face_recognition.load_image_file(image.file)
-            encoded_images = face_recognition.face_encodings(image_file)
+            with open(filename, "wb") as file:
+                file.write(image.file.read())
 
-            if len(encoded_images) == 0:
-                continue
+            embeddings = DeepFace.represent(img_path=filename, model_name=model_name)
 
-            encoded_image = encoded_images[0]
-
-            np.save(user_face_dir(param.user_id) + "/" + str(index), encoded_image)
+            # if len(embeddings) == 0:
+            #     continue
+            #
+            # encoded_image = embeddings[0]
+            # if isinstance(encoded_image, Dict):
+            #     embedding = encoded_image["embedding"]
+            #     np.save(filename, embedding)
+            # else:
+            #     raise Exception("embedding not found")
 
             index += 1
         except Exception as err:
