@@ -26,7 +26,7 @@ async def store(user_id: int = Form(), images: list[UploadFile] = []):
 async def verify(
     user_id: int = Form(),
     image: UploadFile | None = None,
-    image_base64: str | None = None,
+    image_base64: str | None = Form(),
 ):
     img_path = ""
 
@@ -36,7 +36,7 @@ async def verify(
     filename = get_temp_dir() + uuid.uuid4().hex + ".jpg"
 
     if image_base64 is not None:
-        with open("image.jpg", "wb") as file:
+        with open(filename, "wb") as file:
             base64_image = str(image_base64).split(";base64,")[1]
             decoded_image = base64.b64decode(base64_image)
 
@@ -48,14 +48,17 @@ async def verify(
             file.write(image.file.read())
             img_path = filename
 
-    result = await verify_face(user_id, img_path)
-    os.remove(img_path)
+    try:
+        result = await verify_face(user_id, img_path)
+        os.remove(img_path)
 
-    if not result.verified:
+        if not result.verified:
+            raise HTTPException(401, "User face not recognized")
+
+        return {
+            "success": result.verified,
+            "message": "User face recognized",
+            "data": result.model_dump(),
+        }
+    except Exception as e:
         raise HTTPException(401, "User face not recognized")
-
-    return {
-        "success": result.verified,
-        "message": "User face recognized",
-        "data": result.model_dump(),
-    }
