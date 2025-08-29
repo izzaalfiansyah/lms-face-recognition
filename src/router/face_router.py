@@ -5,6 +5,7 @@ import uuid
 from fastapi import APIRouter, Form, HTTPException, UploadFile
 from src.service.face_service.store_face_service import StoreFaceParam, store_face
 from src.service.face_service.verify_face_service import verify_face
+from src.utils.temp_dir import get_temp_dir
 
 router = APIRouter()
 
@@ -32,7 +33,7 @@ async def verify(
     if image is None and image_base64 is None:
         raise HTTPException(status_code=422, detail="Image not found")
 
-    filename = "assets/" + uuid.uuid4().hex + ".jpg"
+    filename = get_temp_dir() + uuid.uuid4().hex + ".jpg"
 
     if image_base64 is not None:
         with open("image.jpg", "wb") as file:
@@ -48,14 +49,13 @@ async def verify(
             img_path = filename
 
     result = await verify_face(user_id, img_path)
-
     os.remove(img_path)
 
     if not result.verified:
-        raise HTTPException(401, "user face not recognized")
+        raise HTTPException(401, "User face not recognized")
 
     return {
         "success": result.verified,
-        "message": "user face recognized",
+        "message": "User face recognized",
         "data": result.model_dump(),
     }

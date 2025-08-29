@@ -4,6 +4,7 @@ from fastapi import WebSocket
 import base64
 
 from src.service.face_service.verify_face_service import verify_face
+from src.utils.temp_dir import get_temp_dir
 
 
 async def ws_verify_action(ws: WebSocket, user_id, data):
@@ -11,7 +12,7 @@ async def ws_verify_action(ws: WebSocket, user_id, data):
         if "image" in data:
             base64_image = str(data).split(";base64,")[1]
             decoded_image = base64.b64decode(base64_image)
-            filename = "assets/" + date.today().strftime("%d-%m-%Y") + ".jpg"
+            filename = get_temp_dir() + date.today().strftime("%d-%m-%Y") + ".jpg"
 
             with open(filename, "wb") as file:
                 file.write(decoded_image)

@@ -43,16 +43,6 @@ def store_face(param: StoreFaceParam, images: list[UploadFile]) -> StoreFaceResu
 
             embeddings = DeepFace.represent(img_path=filename, model_name=model_name)
 
-            # if len(embeddings) == 0:
-            #     continue
-            #
-            # encoded_image = embeddings[0]
-            # if isinstance(encoded_image, Dict):
-            #     embedding = encoded_image["embedding"]
-            #     np.save(filename, embedding)
-            # else:
-            #     raise Exception("embedding not found")
-
             index += 1
         except Exception as err:
             print(err)
