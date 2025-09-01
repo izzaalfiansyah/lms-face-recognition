@@ -17,7 +17,7 @@ async def ws_verify_action(ws: WebSocket, user_id, data):
             with open(filename, "wb") as file:
                 file.write(decoded_image)
 
-            result = await verify_face(user_id=user_id, image=filename)
+            result = await verify_face(user_id=user_id, img_path=filename)
 
             if result.verified:
                 await ws.send_json(
