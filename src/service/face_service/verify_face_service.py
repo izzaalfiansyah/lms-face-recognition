@@ -5,7 +5,7 @@ from fastapi import HTTPException
 from pydantic import BaseModel
 
 from src.service.face_service.get_user_face_dir_service import user_face_dir
-from src.utils.env import model_name
+from src.utils.env import model_name, backend_detector
 
 
 class VerifyFaceResult(BaseModel):
@@ -21,7 +21,10 @@ async def verify_face(user_id: int, img_path: str) -> VerifyFaceResult:
         raise HTTPException(404, detail="Resource face not found")
 
     results = DeepFace.find(
-        img_path=img_path, db_path=user_folder, model_name=model_name
+        img_path=img_path,
+        db_path=user_folder,
+        model_name=model_name,
+        detector_backend=backend_detector,
     )
 
     if len(results) == 0:

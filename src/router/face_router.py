@@ -26,7 +26,7 @@ async def store(user_id: int = Form(), images: list[UploadFile] = []):
 async def verify(
     user_id: int = Form(),
     image: UploadFile | None = None,
-    image_base64: str | None = Form(),
+    image_base64: str | None = Form(default=""),
 ):
     img_path = ""
 
@@ -35,7 +35,7 @@ async def verify(
 
     filename = get_temp_dir() + uuid.uuid4().hex + ".jpg"
 
-    if image_base64 is not None:
+    if image_base64 is not None and image_base64 != "":
         with open(filename, "wb") as file:
             base64_image = str(image_base64).split(";base64,")[1]
             decoded_image = base64.b64decode(base64_image)

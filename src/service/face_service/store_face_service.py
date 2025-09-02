@@ -6,7 +6,7 @@ from deepface import DeepFace
 import numpy as np
 
 from src.service.face_service.get_user_face_dir_service import user_face_dir
-from src.utils.env import model_name
+from src.utils.env import model_name, backend_detector
 
 
 class StoreFaceParam(BaseModel):
@@ -41,7 +41,11 @@ def store_face(param: StoreFaceParam, images: list[UploadFile]) -> StoreFaceResu
             with open(filename, "wb") as file:
                 file.write(image.file.read())
 
-            embeddings = DeepFace.represent(img_path=filename, model_name=model_name)
+            embeddings = DeepFace.represent(
+                img_path=filename,
+                model_name=model_name,
+                detector_backend=backend_detector,
+            )
 
             index += 1
         except Exception as err:
