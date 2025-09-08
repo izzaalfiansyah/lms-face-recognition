@@ -9,3 +9,4 @@ assets/*
 .env
 .env.*
 !.env.example
+test-post.lua
