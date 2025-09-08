@@ -3,9 +3,10 @@ import os
 from deepface import DeepFace
 from fastapi import HTTPException
 from pydantic import BaseModel
+import requests
 
 from src.service.face_service.get_user_face_dir_service import user_face_dir
-from src.utils.env import model_name, backend_detector
+from src.utils.env import model_name, backend_detector, api_lms_url
 
 
 class VerifyFaceResult(BaseModel):
@@ -16,6 +17,50 @@ class VerifyFaceResult(BaseModel):
 
 async def verify_face(user_id: int, img_path: str) -> VerifyFaceResult:
     user_folder = user_face_dir(user_id)
+
+    profile_path = api_lms_url + "/users/" + str(user_id) + "/profile"
+
+    try:
+        res = requests.get(profile_path)
+
+        if res.status_code != 200:
+            raise HTTPException(404, detail="User not found")
+
+        data = res.json()
+
+        if data["success"] is not True:
+            raise HTTPException(404, detail="User not found")
+
+        avatar = data["data"]["user"]["avatar"]
+
+        if avatar is None:
+            raise HTTPException(404, detail="User avatar not found")
+
+        avatar_res = requests.get(avatar)
+
+        if avatar_res.status_code != 200:
+            raise HTTPException(404, detail="User avatar not found")
+
+        filename = "assets/temp/" + str(user_id) + ".jpg"
+        with open(filename, "wb") as file:
+            file.write(avatar_res.content)
+
+        result = DeepFace.verify(
+            img1_path=img_path,
+            img2_path=filename,
+            model_name=model_name,
+            detector_backend=backend_detector,
+        )
+
+        os.remove(filename)
+
+        return VerifyFaceResult(
+            verified=result["verified"],
+            distance=result["distance"],
+            confidence=result["confidence"],
+        )
+    except Exception as err:
+        print(err)
 
     if not os.path.exists(user_folder):
         raise HTTPException(404, detail="Resource face not found")
