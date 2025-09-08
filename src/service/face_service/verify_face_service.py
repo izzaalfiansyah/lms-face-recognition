@@ -6,7 +6,7 @@ from pydantic import BaseModel
 import requests
 
 from src.service.face_service.get_user_face_dir_service import user_face_dir
-from src.utils.env import model_name, backend_detector, api_lms_url
+from src.utils.env import model_name, backend_detector, api_lms_url, api_lms_key
 
 
 class VerifyFaceResult(BaseModel):
@@ -18,10 +18,17 @@ class VerifyFaceResult(BaseModel):
 async def verify_face(user_id: int, img_path: str) -> VerifyFaceResult:
     user_folder = user_face_dir(user_id)
 
-    profile_path = api_lms_url + "/users/" + str(user_id) + "/profile"
+    profile_path = (
+        api_lms_url + "/users/" + str(user_id) + "/profile?test_auth_id=" + str(user_id)
+    )
 
     try:
-        res = requests.get(profile_path)
+        res = requests.get(
+            profile_path,
+            headers={
+                "x-api-key": api_lms_key,
+            },
+        )
 
         if res.status_code != 200:
             raise HTTPException(404, detail="User not found")
