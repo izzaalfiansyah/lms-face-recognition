@@ -15,6 +15,12 @@ class VerifyFaceResult(BaseModel):
     confidence: float
 
 
+def parse_result(distance: float, confidence: float) -> VerifyFaceResult:
+    verified = distance < 0.5
+
+    return VerifyFaceResult(verified=verified, distance=distance, confidence=confidence)
+
+
 async def verify_face(user_id: int, img_path: str) -> VerifyFaceResult:
     user_folder = user_face_dir(user_id)
 
@@ -61,11 +67,7 @@ async def verify_face(user_id: int, img_path: str) -> VerifyFaceResult:
 
         os.remove(filename)
 
-        return VerifyFaceResult(
-            verified=result["verified"],
-            distance=result["distance"],
-            confidence=result["confidence"],
-        )
+        return parse_result(result["distance"], result["confidence"])
     except Exception as err:
         print(err)
 
@@ -84,8 +86,7 @@ async def verify_face(user_id: int, img_path: str) -> VerifyFaceResult:
 
     result = results[0]
 
-    distance = result["distance"].mean()
-    confidence = result["confidence"].mean()
-    verified = distance < 0.5
+    distance: float = result["distance"].mean()
+    confidence: float = result["confidence"].mean()
 
-    return VerifyFaceResult(verified=verified, distance=distance, confidence=confidence)
+    return parse_result(distance=distance, confidence=confidence)
