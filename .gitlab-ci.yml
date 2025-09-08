@@ -1,0 +1,26 @@
+stages:
+  - build
+  - deploy
+
+before_script:
+  - source ~/.bashrc
+  - cd /var/www/lms-face-recognizer
+
+build:
+  stage: build
+  script:
+    - git checkout $CI_COMMIT_REF_NAME
+    - git reset --hard
+    - git clean -fd
+    - git pull origin $CI_COMMIT_REF_NAME
+    - git show --summary
+    - uv sync
+    - echo "Build complete"
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push"'
+
+deploy:
+  stage: deploy
+  script:
+    - systemctl restart lms-face-recognition
+    - echo "Deploy complete"
