@@ -50,11 +50,12 @@ async def verify_face(user_id: int, img_path: str) -> VerifyFaceResult:
             raise HTTPException(404, detail="User avatar not found")
 
         avatar_res = requests.get(avatar)
+        filename = "assets/temp/" + str(user_id) + ".jpg"
 
         if avatar_res.status_code != 200:
+            os.remove(filename)
             raise HTTPException(404, detail="User avatar not found")
 
-        filename = "assets/temp/" + str(user_id) + ".jpg"
         with open(filename, "wb") as file:
             file.write(avatar_res.content)
 

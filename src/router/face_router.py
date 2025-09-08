@@ -61,4 +61,5 @@ async def verify(
             "data": result.model_dump(),
         }
     except Exception as e:
+        os.remove(img_path)
         raise HTTPException(401, "User face not recognized")
