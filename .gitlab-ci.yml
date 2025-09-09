@@ -6,7 +6,7 @@ before_script:
   - source ~/.bashrc
   - cd /var/www/lms-face-recognizer
 
-build:
+build_job:
   stage: build
   script:
     - git checkout $CI_COMMIT_REF_NAME
@@ -18,9 +18,13 @@ build:
     - echo "Build complete"
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
+  tags:
+    - self-host
 
-deploy:
+deploy_job:
   stage: deploy
   script:
     - systemctl restart lms-face-recognition
     - echo "Deploy complete"
+  tags:
+    - self-host
