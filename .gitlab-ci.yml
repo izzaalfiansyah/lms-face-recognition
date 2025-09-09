@@ -19,7 +19,7 @@ build_job:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push"'
   tags:
-    - self-host
+    - self-hosted
 
 deploy_job:
   stage: deploy
@@ -27,4 +27,4 @@ deploy_job:
     - systemctl restart lms-face-recognition
     - echo "Deploy complete"
   tags:
-    - self-host
+    - self-hosted
