@@ -1,7 +1,11 @@
+import os
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from src import ws
 from src.router import face_router
+from src.utils import env
+
+print(f"Source avatar: {env.api_lms_url}")
 
 app = FastAPI(title="Oneklik Face Detection")
 

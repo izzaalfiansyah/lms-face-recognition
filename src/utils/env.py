@@ -1,5 +1,9 @@
 import os
 
+from dotenv import find_dotenv, load_dotenv
+
+load_dotenv(find_dotenv())
+
 app_env = os.getenv("APP_ENV") or "development"
 
 api_lms_url = os.getenv("API_LMS_URL") or "http://localhost:8000/api/development"
